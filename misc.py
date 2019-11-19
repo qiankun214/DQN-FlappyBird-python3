@@ -52,13 +52,13 @@ def load_checkpoint(filename, model):
         checkpoint = torch.load(filename, map_location=lambda storage, loc:storage)
     episode = checkpoint['episode']
     epsilon = checkpoint['epsilon']
-    print 'pretrained episode = {}'.format(episode)
-    print 'pretrained epsilon = {}'.format(epsilon)
+    print('pretrained episode = {}'.format(episode))
+    print('pretrained epsilon = {}'.format(epsilon))
     model.load_state_dict(checkpoint['state_dict'])
     time_step = checkpoint.get('best_time_step', None)
     if time_step is None:
         time_step = checkpoint('time_step')
-    print 'pretrained time step = {}'.format(time_step)
+    print('pretrained time step = {}'.format(time_step))
     return episode, epsilon, time_step
 
 def train_dqn(model, options, resume):
@@ -73,9 +73,9 @@ def train_dqn(model, options, resume):
     best_time_step = 0.
     if resume:
         if options.weight is None:
-            print 'when resume, you should give weight file name.'
+            print('when resume, you should give weight file name.')
             return
-        print 'load previous model weight: {}'.format(options.weight)
+        print('load previous model weight: {}'.format(options.weight))
         _, _, best_time_step = load_checkpoint(options.weight, model)
 
     flappyBird = game.GameState()
@@ -148,8 +148,8 @@ def train_dqn(model, options, resume):
             if terminal:
                 break
 
-        print 'episode: {}, epsilon: {:.4f}, max time step: {}, total reward: {:.6f}'.format(
-                episode, model.epsilon, model.time_step, total_reward)
+        print('episode: {}, epsilon: {:.4f}, max time step: {}, total reward: {:.6f}'.format(
+                episode, model.epsilon, model.time_step, total_reward))
 
         if model.epsilon > options.final_e:
             delta = (options.init_e - options.final_e)/options.exploration
@@ -175,8 +175,8 @@ def train_dqn(model, options, resume):
                  }, False, 'checkpoint-episode-%d.pth.tar' %episode)
         else:
             continue
-        print 'save checkpoint, episode={}, ave time step={:.2f}'.format(
-                 episode, ave_time)
+        print('save checkpoint, episode={}, ave time step={:.2f}'.format(
+                 episode, ave_time))
 
 def test_dqn(model, episode):
     """Test the behavor of dqn when training
@@ -202,7 +202,7 @@ def test_dqn(model, episode):
             model.increase_time_step()
         ave_time += model.time_step
     ave_time /= 5
-    print 'testing: episode: {}, average time: {}'.format(episode, ave_time)
+    print('testing: episode: {}, average time: {}'.format(episode, ave_time))
     return ave_time
 
 
@@ -212,10 +212,10 @@ def play_game(model_file_name, cuda=False, best=True):
        weight -- model file name containing weight of dqn
        best -- if the model is best or not
     """
-    print 'load pretrained model file: ' + model_file_name
+    print('load pretrained model file: ' + model_file_name)
     model = BrainDQN(epsilon=0., mem_size=0, cuda=cuda)
     load_checkpoint(model_file_name, model)
-
+    # print(model.conv1.weight)
     model.set_eval()
     bird_game = game.GameState()
     model.set_initial_state()
@@ -223,12 +223,14 @@ def play_game(model_file_name, cuda=False, best=True):
         model = model.cuda()
     while True:
         action = model.get_optim_action()
+        # print(action)
         o, r, terminal = bird_game.frame_step(action)
         if terminal:
             break
         o = preprocess(o)
+        # print(o)
 
         model.current_state = np.append(model.current_state[1:,:,:], o.reshape((1,)+o.shape), axis=0)
-
+        print(model.current_state.shape)
         model.increase_time_step()
-    print 'total time step is {}'.format(model.time_step)
+    print('total time step is {}'.format(model.time_step))

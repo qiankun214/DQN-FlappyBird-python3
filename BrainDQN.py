@@ -34,7 +34,7 @@ class BrainDQN(nn.Module):
 		self.epsilon = epsilon
 		self.actions = ACTIONS
 		self.mem_size = mem_size
-                self.use_cuda = cuda
+		self.use_cuda = cuda
 		# init Q network
 		self.createQNetwork()
 
@@ -130,11 +130,11 @@ class BrainDQN(nn.Module):
 		"""
 		state = self.current_state
 		state_var = Variable(torch.from_numpy(state), volatile=True).unsqueeze(0)
-                if self.use_cuda:
-                    state_var = state_var.cuda()
+		if self.use_cuda:
+			state_var = state_var.cuda()
 		q_value = self.forward(state_var)
 		_, action_index = torch.max(q_value, dim=1)
-		action_index = action_index.data[0][0]
+		action_index = action_index.data.item()
 		action = np.zeros(self.actions, dtype=np.float32)
 		action[action_index] = 1
 		return action

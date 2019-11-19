@@ -40,13 +40,13 @@ parser.add_argument('--save_checkpoint_freq', type=int,
 if __name__ == '__main__':
     args = parser.parse_args()
     if args.cuda and not torch.cuda.is_available():
-        print 'CUDA is not availale, maybe you should not set --cuda'
+        print("CUDA is not availale, maybe you should not set --cuda")
         sys.exit(1)
     if not args.train and args.weight == '':
-        print 'When test, a pretrained weight model file should be given'
+        print("When test, a pretrained weight model file should be given")
         sys.exit(1)
     if args.cuda:
-        print 'With GPU support!'
+        print("With GPU support!")
     if args.train:
         model = BrainDQN(epsilon=args.init_e, mem_size=args.memory_size, cuda=args.cuda)
         resume = not args.weight == ''
