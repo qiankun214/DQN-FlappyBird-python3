@@ -1,3 +1,5 @@
+This almost copy from https://github.com/xmfbit/DQN-FlappyBird. just adapt it to python3 and torch1.x
+
 ## Flappy Bird With DQN
 
 DQN is a technology to realize reinforcement learning, first proposed by Deep Mind in NIPS13([paper in arxiv](https://arxiv.org/pdf/1312.5602v1.pdf)), whose input is raw pixels and whose output is a value function estimating future rewards. Using Experience Replay, they overcame the problem of network training.

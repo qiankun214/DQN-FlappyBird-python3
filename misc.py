@@ -90,13 +90,13 @@ def train_dqn(model, options, resume):
     if options.cuda:
         model = model.cuda()
     # in the first `OBSERVE` time steos, we dont train the model
-    for i in xrange(options.observation):
+    for i in range(options.observation):
         action = model.get_action_randomly()
         o, r, terminal = flappyBird.frame_step(action)
         o = preprocess(o)
         model.store_transition(o, action, r, terminal)
     # start training
-    for episode in xrange(options.max_episode):
+    for episode in range(options.max_episode):
         model.time_step = 0
         model.set_train()
         total_reward = 0.
@@ -129,9 +129,9 @@ def train_dqn(model, options, resume):
             y = reward_batch.astype(np.float32)
             max_q, _ = torch.max(q_value_next, dim=1)
 
-            for i in xrange(options.batch_size):
+            for i in range(options.batch_size):
                 if not minibatch[i][4]:
-                    y[i] += options.gamma*max_q.data[i][0]
+                    y[i] += options.gamma*max_q.data[i].item()
 
             y = Variable(torch.from_numpy(y))
             action_batch_var = Variable(torch.from_numpy(action_batch))
@@ -141,6 +141,7 @@ def train_dqn(model, options, resume):
             q_value = torch.sum(torch.mul(action_batch_var, q_value), dim=1)
 
             loss = ceriterion(q_value, y)
+            # print(loss)
             loss.backward()
 
             optimizer.step()
@@ -186,7 +187,7 @@ def test_dqn(model, episode):
     """
     model.set_eval()
     ave_time = 0.
-    for test_case in xrange(5):
+    for test_case in range(5):
         model.time_step = 0
         flappyBird = game.GameState()
         o, r, terminal = flappyBird.frame_step([1, 0])

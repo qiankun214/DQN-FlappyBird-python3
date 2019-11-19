@@ -10,7 +10,7 @@ max_episode=100000
 # for fine tuning, uncomment this
 #weight=model_best.pth.tar
 
-python main.py --train\
+python3 main.py --train\
                --cuda\
                --lr=$lr\
                --gamma=$gamma\

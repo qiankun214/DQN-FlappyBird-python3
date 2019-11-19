@@ -44,9 +44,18 @@ class BrainDQN(nn.Module):
 		    model structure: conv->conv->fc->fc
 			change it to your new design
 		"""
-		self.conv1 = nn.Conv2d(4, 32, kernel_size=8, stride=4, padding=2)
+		self.conv1 = nn.Sequential(
+			nn.Conv2d(4, 16, kernel_size=3, stride=2, padding=1),
+			nn.ReLU(),
+			nn.Conv2d(16, 32, kernel_size=3, stride=2, padding=1)
+		)
+		# self.conv1 = nn.Conv2d(4, 32, kernel_size=8, stride=4, padding=2)
 		self.relu1 = nn.ReLU(inplace=True)
-		self.conv2 = nn.Conv2d(32, 64, kernel_size=4, stride=2, padding=1)
+		self.conv2 = nn.Sequential(
+			nn.Conv2d(32, 32, kernel_size=3, stride=1, padding=1),
+			nn.ReLU(),
+			nn.Conv2d(32, 64, kernel_size=3, stride=2, padding=1)
+		)
 		self.relu2 = nn.ReLU(inplace=True)
 		self.map_size = (64, 16, 9)
 		self.fc1 = nn.Linear(self.map_size[0]*self.map_size[1]*self.map_size[2], 256)
@@ -63,6 +72,7 @@ class BrainDQN(nn.Module):
 		out = self.relu1(out)
 		out = self.conv2(out)
 		out = self.relu2(out)
+		# print(out.shape)
 		out = out.view(out.size()[0], -1)
 		out = self.fc1(out)
 		out = self.relu3(out)
